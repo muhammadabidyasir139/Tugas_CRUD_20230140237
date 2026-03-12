@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aplikasi Web CRUD KTP</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Font Awesome untuk Ikon -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- CSS Internal -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header Section -->
+        <header class="header">
+            <div class="header-content">
+                <div class="logo-area">
+                    <i class="fa-solid fa-id-card logo-icon"></i>
+                    <h1>Sistem Pengelolaan KTP</h1>
+                </div>
+                <p class="subtitle">Kelola data Kartu Tanda Penduduk dengan mudah dan aman</p>
+            </div>
+        </header>
+
+        <!-- Main Content Section -->
+        <main class="main-content">
+            <!-- Alert Container untuk Notifikasi -->
+            <div id="alert-container" class="alert-container"></div>
+
+            <div class="grid-layout">
+                <!-- Form Section -->
+                <section class="card form-section">
+                    <div class="card-header">
+                        <h2 id="form-title">
+                            <i class="fa-solid fa-user-plus"></i> Tambah Data KTP Baru
+                        </h2>
+                    </div>
+                    <div class="card-body">
+                        <form id="ktp-form">
+                            <input type="hidden" id="ktp-id">
+                            
+                            <div class="form-group">
+                                <label for="nomorKtp">Nomor KTP (NIK) <span class="required">*</span></label>
+                                <div class="input-wrapper">
+                                    <i class="fa-regular fa-id-badge input-icon"></i>
+                                    <input type="text" id="nomorKtp" name="nomorKtp" placeholder="Masukkan 16 digit NIK" required pattern="\d{16}" title="NIK harus terdiri dari 16 digit angka">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="namaLengkap">Nama Lengkap <span class="required">*</span></label>
+                                <div class="input-wrapper">
+                                    <i class="fa-regular fa-user input-icon"></i>
+                                    <input type="text" id="namaLengkap" name="namaLengkap" placeholder="Masukkan nama lengkap" required>
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="alamat">Alamat Lengkap <span class="required">*</span></label>
+                                <div class="input-wrapper align-top">
+                                    <i class="fa-solid fa-map-location-dot input-icon"></i>
+                                    <textarea id="alamat" name="alamat" rows="3" placeholder="Masukkan alamat lengkap" required></textarea>
+                                </div>
+                            </div>
+
+                            <div class="form-row">
+                                <div class="form-group half-width">
+                                    <label for="tanggalLahir">Tanggal Lahir <span class="required">*</span></label>
+                                    <div class="input-wrapper">
+                                        <input type="date" id="tanggalLahir" name="tanggalLahir" required>
+                                    </div>
+                                </div>
+
+                                <div class="form-group half-width">
+                                    <label for="jenisKelamin">Jenis Kelamin <span class="required">*</span></label>
+                                    <div class="input-wrapper dropdown-wrapper">
+                                        <select id="jenisKelamin" name="jenisKelamin" required>
+                                            <option value="" disabled selected>Pilih Jenis Kelamin</option>
+                                            <option value="Laki-laki">Laki-laki</option>
+                                            <option value="Perempuan">Perempuan</option>
+                                        </select>
+                                        <i class="fa-solid fa-chevron-down select-icon"></i>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-actions">
+                                <button type="button" id="btn-cancel" class="btn btn-secondary" style="display: none;">
+                                    <i class="fa-solid fa-xmark"></i> Batal Edit
+                                </button>
+                                <button type="submit" id="btn-submit" class="btn btn-primary">
+                                    <i class="fa-solid fa-save"></i> Simpan Data
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </section>
+
+                <!-- Data Table Section -->
+                <section class="card data-section">
+                    <div class="card-header">
+                        <h2>
+                            <i class="fa-solid fa-table-list"></i> Daftar Penduduk
+                        </h2>
+                        <div class="search-box">
+                            <i class="fa-solid fa-search"></i>
+                            <input type="text" id="search-input" placeholder="Cari NIK atau Nama...">
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="table-responsive">
+                            <table class="data-table" id="ktp-table">
+                                <thead>
+                                    <tr>
+                                        <th>No</th>
+                                        <th>NIK</th>
+                                        <th>Nama Lengkap</th>
+                                        <th>L/P</th>
+                                        <th>Tanggal Lahir</th>
+                                        <th>Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ktp-tbody">
+                                    <!-- Data akan dimuat dengan AJAX di sini -->
+                                    <tr id="loading-row">
+                                        <td colspan="6" class="text-center loading-state">
+                                            <i class="fa-solid fa-circle-notch fa-spin"></i> Memuat data...
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="pagination-info" id="data-count-info">
+                            Menampilkan 0 data
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal Konfirmasi Hapus -->
+    <div id="delete-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header header-danger">
+                <h3><i class="fa-solid fa-triangle-exclamation"></i> Konfirmasi Hapus</h3>
+                <span class="close-modal">&times;</span>
+            </div>
+            <div class="modal-body">
+                <p>Apakah Anda yakin ingin menghapus data KTP untuk <strong id="delete-name-preview"></strong>?</p>
+                <p class="text-muted text-sm">Tindakan ini tidak dapat dibatalkan.</p>
+                <input type="hidden" id="delete-ktp-id">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary close-modal-btn">Batal</button>
+                <button type="button" id="btn-confirm-delete" class="btn btn-danger">Ya, Hapus Data</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script Dependensi -->
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
